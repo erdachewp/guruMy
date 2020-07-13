@@ -1,0 +1,115 @@
+package guru.springframework.webapp.bootstrap;
+
+import guru.springframework.webapp.domain.Book;
+import guru.springframework.webapp.domain.Author;
+import guru.springframework.webapp.domain.Publisher;
+import guru.springframework.webapp.repositories.AuthorRepository;
+import guru.springframework.webapp.repositories.BookRepository;
+import guru.springframework.webapp.repositories.PublisherRepository;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
+import java.util.HashSet;
+import java.util.Set;
+
+@Component
+public class BootStrapData implements CommandLineRunner {
+    private AuthorRepository authorRepository ;
+    private BookRepository bookRepository ;
+    private PublisherRepository publisherRepository;
+
+    public BootStrapData(AuthorRepository authorRepository,BookRepository bookRepository,
+                         PublisherRepository publisherRepository){
+        this.authorRepository = authorRepository;
+        this.bookRepository = bookRepository;
+        this.publisherRepository = publisherRepository;
+    }//end BootStrapData(with two const)
+
+    @Override
+    public void run(String... args)throws Exception{
+        String[] bookNames = {"Head First","Core Java"};
+
+        Set<Author> authorSet = new HashSet<Author>();
+        Set<Book> books = new HashSet<Book>();
+        Publisher[] publishers = new Publisher[20];
+
+        Author eric = new Author("Eric","Evan",books);
+        Author alex = new Author("Alexander","Ferguson",books);
+        Author maxwell = new Author("Malcolm","Gladwell",books);
+        Author unk =new Author("Unknown","Unknown",books);
+        Author Myles =new Author("Myles","Munroe",books);
+        Author James =new Author("James","Comey",books);
+        Author andre =new Author("Alexandre","Dumas-pere",books);
+        Book theCount = new Book("The Count of Monte Cristo","202000",authorSet);
+        Book leadership = new Book("Leadership","787945",authorSet);
+        Book ddd = new Book("Domain Driven Design","267688", authorSet);
+        Book tippingPoint=  new Book("The Tipping Point","610610",authorSet);
+
+
+        publishers[0] = new Publisher();
+        publishers[0].getId();
+        publishers[0].setName("Selam");
+        publishers[0].setAddress("7000 Elmwood Ave");
+        publishers[0].setCity( "Philadelphia");
+        publishers[0].setState("PA");
+        publishers[0].setZip("700020");
+
+
+        publishers[1] = new Publisher();
+        publishers[1].getId();
+        publishers[1].setName("Peter Erda");
+        publishers[1].setAddress("7426 Sandpiper Pl");
+        publishers[1].setCity( "Philadelphia");
+        publishers[1].setState("DC");
+        publishers[1].setZip("554412l");
+
+        publishers[2] = new Publisher();
+        publishers[2].getId();
+        publishers[2].setName("Berhan");
+        publishers[2].setAddress("71OO Woodland Ave");
+        publishers[2].setCity( "Philadelphia");
+        publishers[2].setState("PA");
+        publishers[2].setZip("710020");
+
+      //  authorSet.add(eric);
+
+        //adding books to authors
+        //eric.getBooks().add(ddd);
+        alex.getBooks().add(leadership);
+        maxwell.getBooks().add(tippingPoint);
+        andre.getBooks().add(theCount);
+        theCount.getAuthors().add(andre);
+        //adding list of authors to books
+        ddd.getAuthors().add(eric);
+        tippingPoint.getAuthors().add(maxwell);
+        leadership.getAuthors().add(alex);
+        theCount.getAuthors().add(unk);
+    //    publishers.getAuthors().add(eric);//wrong
+
+        //publishers.getBooks().add(ddd);
+        //publishers.getBooks().add(ddd);
+
+        //saving authors into authors list
+        authorRepository.save(eric);//2
+        authorRepository.save(alex);
+        authorRepository.save(maxwell);
+        authorRepository.save(Myles);
+        authorRepository.save(andre);
+        authorRepository.save(James);
+//        authorRepository.save(unk);
+ //       saving books into book list
+  //     bookRepository.save(ddd);//4
+ //      bookRepository.save(leadership);
+//        bookRepository.save(tippingPoint);
+//        bookRepository.save(theCount);
+////        //adding publisher into publishers list
+       publisherRepository.save(publishers[0]);
+        publisherRepository.save(publishers[1]);
+        publisherRepository.save(publishers[2]);
+
+        System.out.println("The number of books: "+bookRepository.count());
+        System.out.println("The number of authors: "+authorRepository.count());
+        System.out.println("The number of publisher: "+publisherRepository.count());
+
+
+    }//end run()
+}//end class BootStrapData
