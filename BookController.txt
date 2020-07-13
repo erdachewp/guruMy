@@ -1,0 +1,80 @@
+package guru.springframework.webapp.controllers;
+
+
+import guru.springframework.webapp.domain.Book;
+import guru.springframework.webapp.domain.Author;
+import guru.springframework.webapp.domain.Publisher;
+import guru.springframework.webapp.repositories.BookRepository;
+import guru.springframework.webapp.repositories.AuthorRepository;
+import javassist.NotFoundException;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+import java.util.HashSet;
+import java.lang.*;
+import java.util.Set;
+import java.util.Optional;
+
+@Controller
+@RequestMapping("/books")
+public class BookController {
+    private final BookRepository bookRepository;
+    private final AuthorRepository authorRepository;
+
+    public BookController(BookRepository bookRepository, AuthorRepository authorRepository){
+        this.bookRepository = bookRepository;
+        this.authorRepository = authorRepository;
+    }
+
+    @RequestMapping("")
+    public String getBooks(Model model){
+        Set<Author> authors = new HashSet<>();
+        model.addAttribute( "authors",authors);//authorRepository.findAll()
+        model.addAttribute( "books",bookRepository.findAll());
+
+        return "books/list";
+    }//end getBooks()
+    @RequestMapping(path = {"/edit", "/edit/{id}"})
+    public String editBookById(Model model, @PathVariable("id") Optional<Long> id, Author author)
+            throws NotFoundException
+            //pass author
+    {
+        if (id.isPresent()) {
+            Optional<Book> response = bookRepository.findById(id.get());
+            if(!response.isPresent()){
+                throw new NotFoundException("Book not found.");
+                // return "not-found";
+            }
+                     Book book = response.get();
+
+             model.addAttribute("book", book);
+            model.addAttribute("Authors",author);
+        } else {
+            model.addAttribute("book", new Book());
+
+        }
+
+        model.addAttribute("Authors", authorRepository.findAll());
+        return "books/add-edit";
+    }
+
+    @RequestMapping(path = "/delete/{id}")
+    public String deletePublisherById(Model model, @PathVariable("id") Long id)
+            throws Exception //RecordNotFoundException
+    {
+        bookRepository.deleteById(id);
+        return "redirect:/books";
+    }//end deletePublisherById()
+
+    @RequestMapping(path = "/createBook", method = RequestMethod.POST)
+    public String createOrUpdatePublisher(Book book)
+    {
+
+        bookRepository.save(book);
+        return "redirect:/books";
+    }//end createOrUpdatePublisher()
+}//end class BookController
